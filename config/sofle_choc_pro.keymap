@@ -64,10 +64,10 @@
             //               |     |      |      |      |        |  |       |      |       |       |      |
 
             bindings = <
-&kp ESCAPE  &trans  &trans  &trans  &trans  &trans                          &trans                &trans                 &trans            &trans             &kp MINUS       &kp EQUAL
-&trans      &trans  &trans  &trans  &trans  &trans  &trans                                        &trans                 &trans            &trans             &trans          &kp BACKSLASH
-&trans      &trans  &trans  &trans  &trans  &trans  &kp LEFT_ARROW                                &kp DOWN_ARROW         &kp UP_ARROW      &kp RIGHT_ARROW    &kp BACKSPACE   &trans
-&trans      &trans  &trans  &trans  &trans  &trans  &trans          &trans  &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp LEFT_BRACE  &kp RIGHT_BRACE
+&kp ESCAPE  &trans  &trans  &trans  &trans  &trans                          &trans                &trans                 &trans            &trans             &kp MINUS      &kp EQUAL
+&trans      &trans  &trans  &trans  &trans  &trans  &trans                                        &trans                 &trans            &trans             &trans         &kp BACKSLASH
+&trans      &trans  &trans  &trans  &trans  &trans  &kp LEFT_ARROW                                &kp DOWN_ARROW         &kp UP_ARROW      &kp RIGHT_ARROW    &kp BACKSPACE  &trans
+&trans      &trans  &trans  &trans  &trans  &trans  &trans          &trans  &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &trans         &trans
                     &trans  &trans  &trans  &trans  &trans          &trans  &trans                &trans                 &trans            &trans
             >;
 
