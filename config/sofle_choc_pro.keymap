@@ -21,7 +21,7 @@
     conditional_layers {
         compatible = "zmk,conditional-layers";
 
-        adjust_layer {
+        numbers {
             if-layers = <1 2>;
             then-layer = <3>;
         };
@@ -41,11 +41,11 @@
             //               | GUI | ALT  | CTRL | LOWER|  ENTER |  | SPACE | RAISE| CTRL  | ALT   | GUI  |
 
             bindings = <
-&kp GRAVE         &kp N1  &kp N2  &kp N3     &kp N4        &kp N5                                &kp N6  &kp N7  &kp N8     &kp N9         &kp N0    &kp SINGLE_QUOTE
-&kp TAB           &kp Q   &kp W   &kp E      &kp R         &kp T         &kp Y                           &kp U   &kp I      &kp O          &kp P     &kp BACKSLASH
-&mt LCTRL ESCAPE  &kp A   &kp S   &kp D      &kp F         &kp G         &kp H                           &kp J   &kp K      &kp L          &kp SEMI  &kp BACKSPACE
-&kp LSHFT         &kp Z   &kp X   &kp C      &kp V         &kp B         &kp C_MUTE  &kp C_PLAY  &kp N   &kp M   &kp COMMA  &kp DOT        &kp FSLH  &kp RSHFT
-                          &mo 1   &kp LCTRL  &kp LEFT_ALT  &kp LEFT_GUI  &kp RET     &kp SPACE   &mo 1   &mo 2   &mo 4      &kp RIGHT_GUI
+&kp GRAVE         &kp N1  &kp N2  &kp N3     &kp N4        &kp N5                                &kp N6  &kp N7             &kp N8     &kp N9         &kp N0    &kp SINGLE_QUOTE
+&kp TAB           &kp Q   &kp W   &kp E      &kp R         &kp T         &kp Y                           &kp U              &kp I      &kp O          &kp P     &kp BACKSLASH
+&mt LCTRL ESCAPE  &kp A   &kp S   &kp D      &kp F         &kp G         &kp H                           &kp J              &kp K      &kp L          &kp SEMI  &kp BACKSPACE
+&kp LSHFT         &kp Z   &kp X   &kp C      &kp V         &kp B         &kp C_MUTE  &kp C_PLAY  &kp N   &kp M              &kp COMMA  &kp DOT        &kp FSLH  &kp RSHFT
+                          &mo 1   &kp LCTRL  &kp LEFT_ALT  &kp LEFT_GUI  &kp RET     &kp SPACE   &mo 1   &kp RIGHT_CONTROL  &mo 2      &kp RIGHT_GUI
             >;
 
             sensor-bindings =
@@ -53,7 +53,7 @@
                 <&inc_dec_kp LA(NUMBER_1) LA(NUMBER_2)>;
         };
 
-        lower_layer {
+        lower {
             display-name = "lower";
 
             // ------------------------------------------------------------------------------------------------------------
@@ -76,28 +76,7 @@
                 <&inc_dec_kp K_SCROLL_UP K_SCROLL_DOWN>;
         };
 
-        raise_layer {
-            display-name = "raise";
-
-            // ------------------------------------------------------------------------------------------------------------
-            // | BTCLR | BT1  | BT2  |  BT3  |  BT4  |  BT5 |                |      |      |       |      |       |       |
-            // |       | INS  | PSCR | GUI   |       |      |                | PGUP |      |   ^   |      |       |       |
-            // |       | ALT  | CTRL | SHIFT |       | CAPS |                | PGDN |   <- |   v   |  ->  |  DEL  | BKSPC |
-            // |       | UNDO | CUT  | COPY  | PASTE |      |      |  |      |      |      |       |      |       |       |
-            //                |      |       |       |      |      |  |      |      |      |       |      |
-
-            bindings = <
-&bt BT_CLR  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4                    &trans  &trans  &trans  &trans  &trans  &trans
-&trans      &trans        &trans        &trans        &trans        &trans          &trans                  &trans  &trans  &trans  &trans  &trans
-&trans      &trans        &trans        &trans        &trans        &trans          &trans                  &trans  &trans  &trans  &trans  &trans
-&trans      &trans        &trans        &trans        &trans        &studio_unlock  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-                          &trans        &trans        &trans        &trans          &trans  &trans  &trans  &trans  &trans  &trans
-            >;
-
-            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_PREV C_NEXT>;
-        };
-
-        adjust_layer {
+        raise {
             // ----------------------------------------------------------------------------------------------------------------------------
             // | BTCLR  |  BT1    |  BT2    |   BT3   |   BT4   |   BT5   |                  |      |      |       |      |       |       |
             // | EXTPWR | RGB_HUD | RGB_HUI | RGB_SAD | RGB_SAI | RGB_EFF |                  |      |      |       |      |       |       |
@@ -105,12 +84,12 @@
             // |        |         |         |         |         |         | RGB_TOG | |      |      |      |       |      |       |       |
             //                    |         |         |         |         |         | |      |      |      |       |      |
 
-            display-name = "adjust";
+            display-name = "raise";
             bindings = <
 &bt BT_CLR       &bt BT_SEL 0     &bt BT_SEL 1     &bt BT_SEL 2     &bt BT_SEL 3     &bt BT_SEL 4                             &ext_power EP_TOG  &none  &none  &none  &none  &none
 &rgb_ug RGB_EFF  &rgb_ug RGB_HUD  &rgb_ug RGB_HUI  &rgb_ug RGB_SAD  &rgb_ug RGB_SAI  &rgb_ug RGB_EFF  &none                                      &none  &none  &none  &none  &none
 &rgb_ug RGB_BRD  &rgb_ug RGB_BRI  &none            &none            &none            &none            &none                                      &none  &none  &none  &none  &none
-&none            &none            &none            &none            &none            &none            &rgb_ug RGB_TOG  &none  &none              &none  &none  &none  &none  &none
+&none            &none            &none            &none            &none            &studio_unlock   &rgb_ug RGB_TOG  &none  &none              &none  &none  &none  &none  &none
                                   &none            &none            &none            &none            &none            &none  &none              &none  &none  &none
             >;
         };
