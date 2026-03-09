@@ -102,6 +102,8 @@
 &trans  &trans  &kp COMMA        &kp KP_NUMBER_0  &kp DOT          &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
                 &trans           &trans           &trans           &trans  &trans  &trans  &trans  &trans  &trans  &trans
             >;
+
+            label = "numbers";
         };
     };
 };
