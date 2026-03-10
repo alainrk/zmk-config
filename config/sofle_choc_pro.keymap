@@ -45,7 +45,7 @@
 &kp TAB           &kp Q   &kp W   &kp E      &kp R         &kp T         &kp Y                           &kp U              &kp I      &kp O          &kp P     &kp BACKSLASH
 &mt LCTRL ESCAPE  &kp A   &kp S   &kp D      &kp F         &kp G         &kp H                           &kp J              &kp K      &kp L          &kp SEMI  &kp BACKSPACE
 &kp LSHFT         &kp Z   &kp X   &kp C      &kp V         &kp B         &kp C_MUTE  &kp C_PLAY  &kp N   &kp M              &kp COMMA  &kp DOT        &kp FSLH  &kp RSHFT
-                          &mo 1   &kp LCTRL  &kp LEFT_ALT  &kp LEFT_GUI  &kp RET     &kp SPACE   &mo 1   &kp RIGHT_CONTROL  &mo 2      &kp RIGHT_GUI
+                          &mo 3   &kp LCTRL  &kp LEFT_ALT  &kp LEFT_GUI  &kp RET     &kp SPACE   &mo 1   &kp RIGHT_CONTROL  &mo 2      &kp RIGHT_GUI
             >;
 
             sensor-bindings =
@@ -96,11 +96,11 @@
 
         numbers {
             bindings = <
-&trans  &trans  &kp KP_NUMBER_1  &kp KP_NUMBER_2  &kp KP_NUMBER_3  &trans                  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &kp KP_NUMBER_4  &kp KP_NUMBER_5  &kp KP_NUMBER_6  &trans  &trans                  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &kp KP_NUMBER_7  &kp KP_NUMBER_8  &kp KP_NUMBER_9  &trans  &trans                  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &kp COMMA        &kp KP_NUMBER_0  &kp DOT          &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-                &trans           &trans           &trans           &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                  &trans  &kp KP_NUMBER_1  &kp KP_NUMBER_2  &kp KP_NUMBER_3  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans                  &kp KP_NUMBER_4  &kp KP_NUMBER_5  &kp KP_NUMBER_6  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans                  &kp KP_NUMBER_7  &kp KP_NUMBER_8  &kp KP_NUMBER_9  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp DOT          &kp KP_NUMBER_0  &kp COMMA        &trans  &trans
+                &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans           &trans           &trans
             >;
 
             label = "numbers";
