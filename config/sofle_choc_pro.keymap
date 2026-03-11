@@ -43,7 +43,7 @@
 
             sensor-bindings =
                 <&inc_dec_kp C_VOL_DN C_VOL_UP>,
-                <&inc_dec_kp LA(NUMBER_1) LA(NUMBER_2)>;
+                <&inc_dec_kp RG(MINUS) RG(EQUAL)>;
         };
 
         lower {
