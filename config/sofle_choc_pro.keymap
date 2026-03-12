@@ -34,8 +34,8 @@
             //               | GUI | ALT  | CTRL | LOWER|  ENTER |  | SPACE | RAISE| CTRL  | ALT   | GUI  |
 
             bindings = <
-&kp GRAVE         &kp N1  &kp N2  &kp N3     &kp N4        &kp N5                                &kp N6  &kp N7             &kp N8     &kp N9         &kp N0    &kp SINGLE_QUOTE
-&kp TAB           &kp Q   &kp W   &kp E      &kp R         &kp T         &kp Y                           &kp U              &kp I      &kp O          &kp P     &kp BACKSLASH
+&kp GRAVE         &kp N1  &kp N2  &kp N3     &kp N4        &kp N5                                &kp N6  &kp N7             &kp N8     &kp N9         &kp N0    &kp BACKSLASH
+&kp TAB           &kp Q   &kp W   &kp E      &kp R         &kp T         &kp Y                           &kp U              &kp I      &kp O          &kp P     &kp SINGLE_QUOTE
 &mt LCTRL ESCAPE  &kp A   &kp S   &kp D      &kp F         &kp G         &kp H                           &kp J              &kp K      &kp L          &kp SEMI  &kp BACKSPACE
 &kp LSHFT         &kp Z   &kp X   &kp C      &kp V         &kp B         &kp C_MUTE  &kp C_PLAY  &kp N   &kp M              &kp COMMA  &kp DOT        &kp FSLH  &kp RSHFT
                           &mo 3   &kp LCTRL  &kp LEFT_ALT  &kp LEFT_GUI  &kp RET     &kp SPACE   &mo 1   &kp RIGHT_CONTROL  &mo 2      &kp RIGHT_GUI
@@ -57,11 +57,11 @@
             //               |     |      |      |      |        |  |       |      |       |       |      |
 
             bindings = <
-&kp ESCAPE  &trans                &trans                 &trans            &trans             &trans                                    &trans  &trans          &trans        &trans           &trans      &trans
-&trans      &trans                &trans                 &trans            &kp MINUS          &kp EQUAL         &trans                          &trans          &trans        &trans           &trans      &trans
-&trans      &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp SINGLE_QUOTE  &kp LEFT_ARROW                  &kp DOWN_ARROW  &kp UP_ARROW  &kp RIGHT_ARROW  &kp DELETE  &trans
-&trans      &trans                &trans                 &trans            &trans             &trans            &trans          &trans  &trans  &trans          &trans        &trans           &trans      &trans
-                                  &trans                 &trans            &trans             &trans            &trans          &trans  &trans  &trans          &trans        &trans
+&kp ESCAPE  &trans                &trans                 &trans            &trans             &trans                             &trans  &trans          &trans        &trans           &trans      &trans
+&trans      &trans                &trans                 &trans            &trans             &kp EQUAL  &trans                          &trans          &trans        &trans           &trans      &trans
+&trans      &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp MINUS  &kp LEFT_ARROW                  &kp DOWN_ARROW  &kp UP_ARROW  &kp RIGHT_ARROW  &kp DELETE  &trans
+&trans      &trans                &trans                 &trans            &trans             &trans     &trans          &trans  &trans  &trans          &trans        &trans           &trans      &trans
+                                  &trans                 &trans            &trans             &trans     &trans          &trans  &trans  &trans          &trans        &trans
             >;
 
             sensor-bindings =
