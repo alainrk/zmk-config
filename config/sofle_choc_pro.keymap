@@ -38,7 +38,7 @@
 &kp TAB           &kp Q   &kp W   &kp E      &kp R         &kp T         &kp Y                           &kp U              &kp I      &kp O          &kp P     &kp SINGLE_QUOTE
 &mt LCTRL ESCAPE  &kp A   &kp S   &kp D      &kp F         &kp G         &kp H                           &kp J              &kp K      &kp L          &kp SEMI  &kp BACKSPACE
 &kp LSHFT         &kp Z   &kp X   &kp C      &kp V         &kp B         &kp C_MUTE  &kp C_PLAY  &kp N   &kp M              &kp COMMA  &kp DOT        &kp FSLH  &kp RSHFT
-                          &mo 3   &kp LCTRL  &kp LEFT_ALT  &kp LEFT_GUI  &kp RET     &kp SPACE   &mo 1   &kp RIGHT_CONTROL  &mo 2      &kp RIGHT_GUI
+                          &tog 3  &kp LCTRL  &kp LEFT_ALT  &kp LEFT_GUI  &kp RET     &kp SPACE   &mo 1   &kp RIGHT_CONTROL  &mo 2      &kp RIGHT_GUI
             >;
 
             sensor-bindings =
@@ -93,7 +93,7 @@
 &trans  &trans  &trans  &trans  &trans  &trans  &kp MINUS                          &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &kp COMMA     &trans
 &trans  &trans  &trans  &trans  &trans  &trans  &kp LS(N8)                         &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &kp DOT       &trans
 &trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans  &kp SLASH      &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &kp NUMBER_0  &trans
-                &trans  &trans  &trans  &trans  &trans      &trans  &trans         &trans        &trans        &trans
+                &tog 3  &trans  &trans  &trans  &trans      &trans  &trans         &trans        &trans        &trans
             >;
 
             label = "numbers";
