@@ -89,11 +89,11 @@
 
         numbers {
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans                      &kp LS(EQUAL)  &kp KP_NUMBER_1  &kp KP_NUMBER_2  &kp KP_NUMBER_3  &trans        &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &kp MINUS                          &kp NUMBER_1     &kp NUMBER_2     &kp NUMBER_3     &kp COMMA     &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &kp LS(N8)                         &kp NUMBER_4     &kp NUMBER_5     &kp NUMBER_6     &kp DOT       &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans  &kp SLASH      &kp NUMBER_7     &kp NUMBER_8     &kp NUMBER_9     &kp NUMBER_0  &trans
-                &trans  &trans  &trans  &trans  &trans      &trans  &trans         &trans           &trans           &trans
+&trans  &trans  &trans  &trans  &trans  &trans                      &kp LS(EQUAL)  &trans        &trans        &trans        &trans        &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &kp MINUS                          &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &kp COMMA     &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &kp LS(N8)                         &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &kp DOT       &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans      &trans  &kp SLASH      &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &kp NUMBER_0  &trans
+                &trans  &trans  &trans  &trans  &trans      &trans  &trans         &trans        &trans        &trans
             >;
 
             label = "numbers";
