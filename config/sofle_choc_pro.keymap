@@ -57,11 +57,11 @@
             //               |     |      |      |      |        |  |       |      |       |       |      |
 
             bindings = <
-&kp ESCAPE  &trans                &trans                 &trans            &trans             &trans                             &trans  &trans          &trans        &trans           &trans      &trans
-&trans      &trans                &trans                 &trans            &trans             &kp EQUAL  &trans                          &trans          &trans        &trans           &trans      &trans
-&trans      &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp MINUS  &kp LEFT_ARROW                  &kp DOWN_ARROW  &kp UP_ARROW  &kp RIGHT_ARROW  &kp DELETE  &trans
-&trans      &trans                &trans                 &trans            &trans             &trans     &trans          &trans  &trans  &trans          &trans        &trans           &trans      &trans
-                                  &trans                 &trans            &trans             &trans     &trans          &trans  &trans  &trans          &trans        &trans
+&kp ESCAPE  &trans                &trans                 &trans            &trans             &trans                               &trans  &trans          &trans        &trans           &trans      &trans
+&trans      &kp EXCLAMATION       &kp AT_SIGN            &kp HASH          &kp DOLLAR         &kp PERCENT  &trans                          &trans          &trans        &trans           &trans      &trans
+&trans      &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp MINUS    &kp LEFT_ARROW                  &kp DOWN_ARROW  &kp UP_ARROW  &kp RIGHT_ARROW  &kp DELETE  &trans
+&trans      &trans                &trans                 &trans            &kp EQUAL          &trans       &trans          &trans  &trans  &trans          &trans        &trans           &trans      &trans
+                                  &trans                 &trans            &trans             &trans       &trans          &trans  &trans  &trans          &trans        &trans
             >;
 
             sensor-bindings =
