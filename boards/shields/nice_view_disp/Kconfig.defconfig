@@ -1,7 +1,10 @@
 # Copyright (c) 2023 The ZMK Contributors
 # SPDX-License-Identifier: MIT
 
-if SHIELD_NICE_VIEW_DISP
+# The rotation flag is useful for any shield that renders via the nice!view
+# display stack. When using e.g. `nice_view_gem` without `nice_view_disp`, we
+# still want `CONFIG_NICE_VIEW_DISP_ROTATE_180` to be configurable.
+if SHIELD_NICE_VIEW_DISP || SHIELD_NICE_VIEW_GEM
 
 config LV_Z_VDB_SIZE
     default 100
@@ -55,4 +58,4 @@ endif # !ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL
 config ZMK_DISPLAY_STATUS_SCREEN_BUILT_IN
     select LV_FONT_MONTSERRAT_26
 
-endif # SHIELD_NICE_VIEW_DISP
+endif # SHIELD_NICE_VIEW_DISP || SHIELD_NICE_VIEW_GEM
