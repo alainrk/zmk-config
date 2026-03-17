@@ -13,6 +13,8 @@ manifest:
       import: app/west.yml
     - name: nice-view-gem #new entry
       remote: m165437 #new entry
-      revision: main #new entry
+      # Keep this module pinned to a revision compatible with the ZMK revision above.
+      # nice-view-gem's `main` targets ZMK `main` (Zephyr 4.1+/newer LVGL APIs).
+      revision: v0.3.0 #new entry
   self:
     path: config
