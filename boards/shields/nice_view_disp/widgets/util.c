@@ -24,7 +24,7 @@ void rotate_canvas(lv_obj_t *canvas, lv_color_t cbuf[]) {
   lv_canvas_transform(canvas, &img, -900, LV_IMG_ZOOM_NONE, -1, 0,
                       CANVAS_SIZE / 2, CANVAS_SIZE / 2 - 1, true);
 #else
-  lv_canvas_transform(canvas, &img, 2700, LV_IMG_ZOOM_NONE, -1, 0,
+  lv_canvas_transform(canvas, &img, 9000, LV_IMG_ZOOM_NONE, -1, 0,
                       CANVAS_SIZE / 2, CANVAS_SIZE / 2, true);
 #endif
 }
