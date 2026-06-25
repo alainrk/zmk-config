@@ -13,8 +13,12 @@
  *   - Keep the underglow on the Solid effect (the board default) for a steady
  *     red. Animated effects (breathe/spectrum/swirl) keep animating and will
  *     just be tinted red rather than showing a solid block of red.
- *   - Central-only: the colour change is synced to the peripheral half
- *     automatically by ZMK's split RGB underglow sync, so both halves go red.
+ *   - Compiled on BOTH halves. ZMK v0.3 has no split underglow state sync, so
+ *     each half must drive its own strip: the central reacts to the host's
+ *     HID indicator report, the peripheral reacts to the same event forwarded
+ *     over the split (needs CONFIG_ZMK_SPLIT_PERIPHERAL_HID_INDICATORS=y).
+ *     Driving only the central would light just one half AND desync the halves,
+ *     breaking the global &rgb_ug raise-layer controls on the peripheral.
  */
 
 #include <zephyr/kernel.h>
