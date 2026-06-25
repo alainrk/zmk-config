@@ -5,16 +5,19 @@
  * solid red while Caps Lock is on, restoring the previous state when it
  * turns off.
  *
- * Notes / limitations (ZMK v0.3):
- *   - ZMK exposes no getter for the live underglow colour/effect, so the
- *     colour restored on Caps-off is the fixed `normal_color` below, NOT an
- *     arbitrary colour you may have set via the RAISE-layer RGB keys.
- *     Only the on/off state is restored exactly.
- *   - Keep the underglow on the Solid effect (the board default) for a steady
- *     red. Animated effects (breathe/spectrum/swirl) keep animating and will
- *     just be tinted red rather than showing a solid block of red.
- *   - Central-only: the colour change is synced to the peripheral half
- *     automatically by ZMK's split RGB underglow sync, so both halves go red.
+ * Notes (ZMK v0.3):
+ *   - On Caps-off the previous colour and on/off state are restored exactly:
+ *     the colour is captured on Caps-on via calc_hue(0) (a pure read of the
+ *     live colour, the only public way to read it in v0.3).
+ *   - The effect is never changed, so an animated effect (breathe/spectrum/
+ *     swirl) is preserved; while Caps is on it just animates tinted red rather
+ *     than showing a solid block of red. Keep the Solid effect for steady red.
+ *   - Compiled on BOTH halves. ZMK v0.3 has no split underglow state sync, so
+ *     each half must drive its own strip: the central reacts to the host's
+ *     HID indicator report, the peripheral reacts to the same event forwarded
+ *     over the split (needs CONFIG_ZMK_SPLIT_PERIPHERAL_HID_INDICATORS=y).
+ *     Driving only the central would light just one half AND desync the halves,
+ *     breaking the global &rgb_ug raise-layer controls on the peripheral.
  */
 
 #include <zephyr/kernel.h>
@@ -33,12 +36,9 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 /* Solid red shown while Caps Lock is on. Ranges: h 0-360, s 0-100, b 0-100. */
 static const struct zmk_led_hsb caps_color = {.h = 0, .s = 100, .b = 100};
 
-/* Colour restored when Caps Lock turns off (if underglow was on).
- * Defaults match the board defconfig: HUE_START=200, SAT_START=98. */
-static const struct zmk_led_hsb normal_color = {.h = 200, .s = 98, .b = 100};
-
 static bool caps_active;
-static bool restore_on; /* underglow on/off state captured when caps turned on */
+static bool restore_on;                 /* on/off state captured when caps turned on */
+static struct zmk_led_hsb restore_color; /* colour captured when caps turned on */
 
 static int caps_underglow_listener(const zmk_event_t *eh) {
     const struct zmk_hid_indicators_changed *ev = as_zmk_hid_indicators_changed(eh);
@@ -53,7 +53,11 @@ static int caps_underglow_listener(const zmk_event_t *eh) {
     caps_active = caps_now;
 
     if (caps_now) {
-        /* Remember whether the underglow was on, then force solid red on. */
+        /* Capture the current colour and on/off state, then force solid red on.
+         * calc_hue(0) returns the live state.color unchanged (a pure read), the
+         * only public way to read the current colour in ZMK v0.3. We never touch
+         * the effect, so an animated effect is preserved (just tinted red). */
+        restore_color = zmk_rgb_underglow_calc_hue(0);
         restore_on = false;
         zmk_rgb_underglow_get_state(&restore_on);
         if (!restore_on) {
@@ -61,9 +65,8 @@ static int caps_underglow_listener(const zmk_event_t *eh) {
         }
         zmk_rgb_underglow_set_hsb(caps_color);
     } else {
-        /* Always set the colour back first so the persisted colour is the
-         * normal one rather than red, then restore the on/off state. */
-        zmk_rgb_underglow_set_hsb(normal_color);
+        /* Restore the exact colour we captured, then the on/off state. */
+        zmk_rgb_underglow_set_hsb(restore_color);
         if (!restore_on) {
             zmk_rgb_underglow_off();
         }
