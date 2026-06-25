@@ -135,9 +135,10 @@ static void caps_status_update_cb(struct caps_status_state state) {
 }
 
 static struct caps_status_state caps_status_get_state(const zmk_event_t *eh) {
+    // zmk_hid_indicators_get_current_profile() is not linked on the peripheral,
+    // so rely solely on the forwarded event (defaults off until the first one).
     const struct zmk_hid_indicators_changed *ev = as_zmk_hid_indicators_changed(eh);
-    zmk_hid_indicators_t indicators =
-        (ev != NULL) ? ev->indicators : zmk_hid_indicators_get_current_profile();
+    zmk_hid_indicators_t indicators = (ev != NULL) ? ev->indicators : 0;
     return (struct caps_status_state){.caps_on = (indicators & BIT(1)) != 0};
 }
 
