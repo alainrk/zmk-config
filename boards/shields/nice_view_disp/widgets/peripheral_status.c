@@ -57,7 +57,7 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     // Draw CAPS indicator when Caps Lock is on
     if (state->caps_on) {
         lv_draw_label_dsc_t caps_dsc;
-        init_label_dsc(&caps_dsc, LVGL_FOREGROUND, &lv_font_montserrat_14, LV_TEXT_ALIGN_LEFT);
+        init_label_dsc(&caps_dsc, LVGL_FOREGROUND, &lv_font_montserrat_16, LV_TEXT_ALIGN_LEFT);
         lv_canvas_draw_text(canvas, 0, 40, CANVAS_SIZE, &caps_dsc, "CAPS");
     }
 
