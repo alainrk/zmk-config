@@ -20,6 +20,10 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/events/split_peripheral_status_changed.h>
 #include <zmk/usb.h>
 #include <zmk/ble.h>
+#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+#include <zmk/events/hid_indicators_changed.h>
+#include <zmk/hid_indicators.h>
+#endif
 
 #include "peripheral_status.h"
 
@@ -49,6 +53,14 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     // Draw output status
     lv_canvas_draw_text(canvas, 0, 0, CANVAS_SIZE, &label_dsc,
                         state->connected ? LV_SYMBOL_WIFI : LV_SYMBOL_CLOSE);
+
+    // Draw CAPS indicator when Caps Lock is on. The decorative art is hidden
+    // meanwhile (see set_caps_status) so this text is not covered by it.
+    if (state->caps_on) {
+        lv_draw_label_dsc_t caps_dsc;
+        init_label_dsc(&caps_dsc, LVGL_FOREGROUND, &lv_font_montserrat_16, LV_TEXT_ALIGN_CENTER);
+        lv_canvas_draw_text(canvas, 0, 28, CANVAS_SIZE, &caps_dsc, "CAPS");
+    }
 
     // Rotate canvas
     rotate_canvas(canvas, cbuf);
@@ -107,6 +119,47 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_peripheral_status, struct peripheral_status_s
                             output_status_update_cb, get_state)
 ZMK_SUBSCRIPTION(widget_peripheral_status, zmk_split_peripheral_status_changed);
 
+#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+struct caps_status_state {
+    bool caps_on;
+};
+
+static void set_caps_status(struct zmk_widget_status *widget, struct caps_status_state state) {
+    widget->state.caps_on = state.caps_on;
+
+    // The art image (child 1) is layered on top of the status canvas and would
+    // cover the "CAPS" text, so hide it while Caps Lock is on and restore it
+    // when off. Child 0 is the canvas, child 1 is the art (see init order).
+    lv_obj_t *art = lv_obj_get_child(widget->obj, 1);
+    if (art != NULL) {
+        if (state.caps_on) {
+            lv_obj_add_flag(art, LV_OBJ_FLAG_HIDDEN);
+        } else {
+            lv_obj_clear_flag(art, LV_OBJ_FLAG_HIDDEN);
+        }
+    }
+
+    draw_top(widget->obj, widget->cbuf, &widget->state);
+}
+
+static void caps_status_update_cb(struct caps_status_state state) {
+    struct zmk_widget_status *widget;
+    SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) { set_caps_status(widget, state); }
+}
+
+static struct caps_status_state caps_status_get_state(const zmk_event_t *eh) {
+    // zmk_hid_indicators_get_current_profile() is not linked on the peripheral,
+    // so rely solely on the forwarded event (defaults off until the first one).
+    const struct zmk_hid_indicators_changed *ev = as_zmk_hid_indicators_changed(eh);
+    zmk_hid_indicators_t indicators = (ev != NULL) ? ev->indicators : 0;
+    return (struct caps_status_state){.caps_on = (indicators & BIT(1)) != 0};
+}
+
+ZMK_DISPLAY_WIDGET_LISTENER(widget_caps_status, struct caps_status_state, caps_status_update_cb,
+                            caps_status_get_state)
+ZMK_SUBSCRIPTION(widget_caps_status, zmk_hid_indicators_changed);
+#endif
+
 #ifdef CONFIG_NICE_VIEW_DISP_ROTATE_180 // sets positions for default and flipped canvases
 int art_pos = 20;
 int top_pos = 0;
@@ -130,6 +183,9 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     sys_slist_append(&widgets, &widget->node);
     widget_battery_status_init();
     widget_peripheral_status_init();
+#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
+    widget_caps_status_init();
+#endif
 
     return 0;
 }
