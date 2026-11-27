@@ -5,8 +5,10 @@
  *
  */
 
+#include <stdio.h>
+
 #include <zephyr/kernel.h>
-#include <zephyr/random/random.h>
+#include <zephyr/sys/atomic.h>
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
@@ -27,10 +29,11 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include "peripheral_status.h"
 
-LV_IMG_DECLARE(balloon);
-LV_IMG_DECLARE(mountain);
-
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
+
+// Active Bluetooth profile, as told by the central half. -1 until the first
+// update arrives (the peripheral cannot know it on its own).
+static atomic_t bt_profile = ATOMIC_INIT(-1);
 
 struct peripheral_status_state {
     bool connected;
@@ -54,8 +57,7 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     lv_canvas_draw_text(canvas, 0, 0, CANVAS_SIZE, &label_dsc,
                         state->connected ? LV_SYMBOL_WIFI : LV_SYMBOL_CLOSE);
 
-    // Draw CAPS indicator when Caps Lock is on. The decorative art is hidden
-    // meanwhile (see set_caps_status) so this text is not covered by it.
+    // Draw CAPS indicator when Caps Lock is on.
     if (state->caps_on) {
         lv_draw_label_dsc_t caps_dsc;
         init_label_dsc(&caps_dsc, LVGL_FOREGROUND, &lv_font_montserrat_16, LV_TEXT_ALIGN_CENTER);
@@ -64,6 +66,53 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
 
     // Rotate canvas
     rotate_canvas(canvas, cbuf);
+}
+
+// Draw "BT" and the profile number in big digits. The number starts at 1, like
+// on the central display.
+static void draw_bt_profile(lv_obj_t *widget, lv_color_t cbuf[]) {
+    lv_obj_t *canvas = lv_obj_get_child(widget, 1);
+
+    lv_draw_rect_dsc_t rect_black_dsc;
+    init_rect_dsc(&rect_black_dsc, LVGL_BACKGROUND);
+    lv_draw_label_dsc_t title_dsc;
+    init_label_dsc(&title_dsc, LVGL_FOREGROUND, &lv_font_montserrat_16, LV_TEXT_ALIGN_CENTER);
+    lv_draw_label_dsc_t number_dsc;
+    init_label_dsc(&number_dsc, LVGL_FOREGROUND, &lv_font_montserrat_48, LV_TEXT_ALIGN_CENTER);
+
+    lv_canvas_draw_rect(canvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE, &rect_black_dsc);
+
+    char text[4] = "-";
+    int index = atomic_get(&bt_profile);
+    if (index >= 0) {
+        snprintf(text, sizeof(text), "%d", (index + 1) % 100);
+    }
+
+    lv_canvas_draw_text(canvas, 0, 0, CANVAS_SIZE, &title_dsc, "BT");
+    lv_canvas_draw_text(canvas, 0, 16, CANVAS_SIZE, &number_dsc, text);
+
+    rotate_canvas(canvas, cbuf);
+}
+
+static void bt_profile_work_cb(struct k_work *work) {
+    struct zmk_widget_status *widget;
+    SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) {
+        draw_bt_profile(widget->obj, widget->cbuf2);
+    }
+}
+
+static K_WORK_DEFINE(bt_profile_work, bt_profile_work_cb);
+
+void zmk_widget_status_set_bt_profile(uint8_t index) {
+    if (atomic_set(&bt_profile, index) == index) {
+        return;
+    }
+
+    // Drawing must happen on the display work queue. If the display is not up
+    // yet, zmk_widget_status_init() draws the stored value later.
+    if (zmk_display_is_initialized()) {
+        k_work_submit_to_queue(zmk_display_work_q(), &bt_profile_work);
+    }
 }
 
 static void set_battery_status(struct zmk_widget_status *widget,
@@ -127,18 +176,6 @@ struct caps_status_state {
 static void set_caps_status(struct zmk_widget_status *widget, struct caps_status_state state) {
     widget->state.caps_on = state.caps_on;
 
-    // The art image (child 1) is layered on top of the status canvas and would
-    // cover the "CAPS" text, so hide it while Caps Lock is on and restore it
-    // when off. Child 0 is the canvas, child 1 is the art (see init order).
-    lv_obj_t *art = lv_obj_get_child(widget->obj, 1);
-    if (art != NULL) {
-        if (state.caps_on) {
-            lv_obj_add_flag(art, LV_OBJ_FLAG_HIDDEN);
-        } else {
-            lv_obj_clear_flag(art, LV_OBJ_FLAG_HIDDEN);
-        }
-    }
-
     draw_top(widget->obj, widget->cbuf, &widget->state);
 }
 
@@ -161,11 +198,11 @@ ZMK_SUBSCRIPTION(widget_caps_status, zmk_hid_indicators_changed);
 #endif
 
 #ifdef CONFIG_NICE_VIEW_DISP_ROTATE_180 // sets positions for default and flipped canvases
-int art_pos = 20;
 int top_pos = 0;
+int bt_pos = 68;
 #else
-int art_pos = 0;
 int top_pos = 92;
+int bt_pos = 24;
 #endif
 
 int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
@@ -175,10 +212,11 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_obj_align(top, LV_ALIGN_TOP_LEFT, top_pos, 0);
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
 
-    lv_obj_t *art = lv_img_create(widget->obj);
-    bool random = sys_rand32_get() & 1;
-    lv_img_set_src(art, random ? &balloon : &mountain);
-    lv_obj_align(art, LV_ALIGN_TOP_LEFT, art_pos, 0);
+    // Child 1: the Bluetooth profile number (draw_bt_profile relies on the order).
+    lv_obj_t *bt = lv_canvas_create(widget->obj);
+    lv_obj_align(bt, LV_ALIGN_TOP_LEFT, bt_pos, 0);
+    lv_canvas_set_buffer(bt, widget->cbuf2, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
+    draw_bt_profile(widget->obj, widget->cbuf2);
 
     sys_slist_append(&widgets, &widget->node);
     widget_battery_status_init();
