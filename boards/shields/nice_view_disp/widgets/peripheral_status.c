@@ -5,8 +5,6 @@
  *
  */
 
-#include <stdio.h>
-
 #include <zephyr/kernel.h>
 #include <zephyr/sys/atomic.h>
 
@@ -57,39 +55,79 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     lv_canvas_draw_text(canvas, 0, 0, CANVAS_SIZE, &label_dsc,
                         state->connected ? LV_SYMBOL_WIFI : LV_SYMBOL_CLOSE);
 
-    // Draw CAPS indicator when Caps Lock is on.
-    if (state->caps_on) {
-        lv_draw_label_dsc_t caps_dsc;
-        init_label_dsc(&caps_dsc, LVGL_FOREGROUND, &lv_font_montserrat_16, LV_TEXT_ALIGN_CENTER);
-        lv_canvas_draw_text(canvas, 0, 28, CANVAS_SIZE, &caps_dsc, "CAPS");
-    }
-
     // Rotate canvas
     rotate_canvas(canvas, cbuf);
 }
 
-// Draw "BT" and the profile number in big digits. The number starts at 1, like
-// on the central display.
+// The profile number is drawn with the 48 px font, then scaled up to this size
+// (LVGL units, 256 is normal size) so it nearly fills its canvas.
+#define BT_NUMBER_ZOOM 460
+
+// Draw the profile number in big digits. The number starts at 1, like on the
+// central display.
 static void draw_bt_profile(lv_obj_t *widget, lv_color_t cbuf[]) {
     lv_obj_t *canvas = lv_obj_get_child(widget, 1);
+    const lv_font_t *font = &lv_font_montserrat_48;
 
     lv_draw_rect_dsc_t rect_black_dsc;
     init_rect_dsc(&rect_black_dsc, LVGL_BACKGROUND);
-    lv_draw_label_dsc_t title_dsc;
-    init_label_dsc(&title_dsc, LVGL_FOREGROUND, &lv_font_montserrat_16, LV_TEXT_ALIGN_CENTER);
     lv_draw_label_dsc_t number_dsc;
-    init_label_dsc(&number_dsc, LVGL_FOREGROUND, &lv_font_montserrat_48, LV_TEXT_ALIGN_CENTER);
+    init_label_dsc(&number_dsc, LVGL_FOREGROUND, font, LV_TEXT_ALIGN_CENTER);
 
     lv_canvas_draw_rect(canvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE, &rect_black_dsc);
 
-    char text[4] = "-";
+    char text[2] = "-";
     int index = atomic_get(&bt_profile);
     if (index >= 0) {
-        snprintf(text, sizeof(text), "%d", (index + 1) % 100);
+        text[0] = '0' + (index + 1) % 10;
     }
 
-    lv_canvas_draw_text(canvas, 0, 0, CANVAS_SIZE, &title_dsc, "BT");
-    lv_canvas_draw_text(canvas, 0, 16, CANVAS_SIZE, &number_dsc, text);
+    // The scaling is done around the canvas center, so put the middle of the
+    // glyph exactly there. Work out where the glyph sits inside its text line.
+    int y = (CANVAS_SIZE - font->line_height) / 2;
+    lv_font_glyph_dsc_t glyph;
+    if (lv_font_get_glyph_dsc(font, &glyph, text[0], 0)) {
+        int glyph_top = font->line_height - font->base_line - glyph.ofs_y - glyph.box_h;
+        y = CANVAS_SIZE / 2 - glyph.box_h / 2 - glyph_top;
+    }
+
+    lv_canvas_draw_text(canvas, 0, y, CANVAS_SIZE, &number_dsc, text);
+
+    rotate_canvas_zoom(canvas, cbuf, BT_NUMBER_ZOOM);
+}
+
+// Bottom of the screen: a "CAPS" bar while Caps Lock is on, and a small
+// mountain ridge with a sun under it. The ridge is only decoration, the
+// encoder knob hides part of it.
+static void draw_bottom(lv_obj_t *widget, lv_color_t cbuf[], const struct status_state *state) {
+    lv_obj_t *canvas = lv_obj_get_child(widget, 2);
+
+    lv_draw_rect_dsc_t rect_black_dsc;
+    init_rect_dsc(&rect_black_dsc, LVGL_BACKGROUND);
+    lv_draw_rect_dsc_t rect_white_dsc;
+    init_rect_dsc(&rect_white_dsc, LVGL_FOREGROUND);
+    lv_draw_line_dsc_t line_dsc;
+    init_line_dsc(&line_dsc, LVGL_FOREGROUND, 2);
+    lv_draw_arc_dsc_t arc_dsc;
+    init_arc_dsc(&arc_dsc, LVGL_FOREGROUND, 2);
+
+    lv_canvas_draw_rect(canvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE, &rect_black_dsc);
+
+    if (state->caps_on) {
+        lv_draw_label_dsc_t caps_dsc;
+        init_label_dsc(&caps_dsc, LVGL_BACKGROUND, &lv_font_montserrat_16, LV_TEXT_ALIGN_CENTER);
+        lv_canvas_draw_rect(canvas, 2, 0, CANVAS_SIZE - 4, 20, &rect_white_dsc);
+        lv_canvas_draw_text(canvas, 0, 1, CANVAS_SIZE, &caps_dsc, "CAPS");
+    }
+
+    // Sun
+    lv_canvas_draw_arc(canvas, 52, 32, 5, 0, 360, &arc_dsc);
+
+    // Mountain ridge
+    static const lv_point_t ridge[] = {
+        {0, 66}, {12, 48}, {20, 58}, {34, 36}, {46, 58}, {56, 46}, {67, 62},
+    };
+    lv_canvas_draw_line(canvas, ridge, ARRAY_SIZE(ridge), &line_dsc);
 
     rotate_canvas(canvas, cbuf);
 }
@@ -176,7 +214,7 @@ struct caps_status_state {
 static void set_caps_status(struct zmk_widget_status *widget, struct caps_status_state state) {
     widget->state.caps_on = state.caps_on;
 
-    draw_top(widget->obj, widget->cbuf, &widget->state);
+    draw_bottom(widget->obj, widget->cbuf3, &widget->state);
 }
 
 static void caps_status_update_cb(struct caps_status_state state) {
@@ -199,24 +237,38 @@ ZMK_SUBSCRIPTION(widget_caps_status, zmk_hid_indicators_changed);
 
 #ifdef CONFIG_NICE_VIEW_DISP_ROTATE_180 // sets positions for default and flipped canvases
 int top_pos = 0;
-int bt_pos = 68;
+int bt_pos = 18;
+int bottom_pos = 92;
 #else
 int top_pos = 92;
-int bt_pos = 24;
+int bt_pos = 74;
+int bottom_pos = 0;
 #endif
 
 int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, 160, 68);
+    // The canvases do not cover every pixel, so fill the gaps with the same
+    // background color.
+    lv_obj_set_style_bg_color(widget->obj, LVGL_BACKGROUND, LV_PART_MAIN);
+    lv_obj_set_style_bg_opa(widget->obj, LV_OPA_COVER, LV_PART_MAIN);
     lv_obj_t *top = lv_canvas_create(widget->obj);
     lv_obj_align(top, LV_ALIGN_TOP_LEFT, top_pos, 0);
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
 
     // Child 1: the Bluetooth profile number (draw_bt_profile relies on the order).
+    // It sits right under the battery row and overlaps the unused lower part of
+    // the top canvas.
     lv_obj_t *bt = lv_canvas_create(widget->obj);
     lv_obj_align(bt, LV_ALIGN_TOP_LEFT, bt_pos, 0);
     lv_canvas_set_buffer(bt, widget->cbuf2, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
     draw_bt_profile(widget->obj, widget->cbuf2);
+
+    // Child 2: CAPS bar and the mountain ridge.
+    lv_obj_t *bottom = lv_canvas_create(widget->obj);
+    lv_obj_align(bottom, LV_ALIGN_TOP_LEFT, bottom_pos, 0);
+    lv_canvas_set_buffer(bottom, widget->cbuf3, CANVAS_SIZE, CANVAS_SIZE, LV_IMG_CF_TRUE_COLOR);
+    draw_bottom(widget->obj, widget->cbuf3, &widget->state);
 
     sys_slist_append(&widgets, &widget->node);
     widget_battery_status_init();

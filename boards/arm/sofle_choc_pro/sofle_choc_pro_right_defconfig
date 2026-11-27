@@ -50,3 +50,6 @@ CONFIG_ZMK_BLE_EXPERIMENTAL_CONN=y
 
 # Rotate display
 CONFIG_NICE_VIEW_DISP_ROTATE_180=y
+
+# Dark content on a light background on the right display
+CONFIG_NICE_VIEW_DISP_WIDGET_INVERTED=y

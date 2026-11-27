@@ -11,6 +11,10 @@
 LV_IMG_DECLARE(bolt);
 
 void rotate_canvas(lv_obj_t *canvas, lv_color_t cbuf[]) {
+    rotate_canvas_zoom(canvas, cbuf, LV_IMG_ZOOM_NONE);
+}
+
+void rotate_canvas_zoom(lv_obj_t *canvas, lv_color_t cbuf[], uint16_t zoom) {
     static lv_color_t cbuf_tmp[CANVAS_SIZE * CANVAS_SIZE];
     memcpy(cbuf_tmp, cbuf, sizeof(cbuf_tmp));
     lv_img_dsc_t img;
@@ -21,11 +25,10 @@ void rotate_canvas(lv_obj_t *canvas, lv_color_t cbuf[]) {
 
     lv_canvas_fill_bg(canvas, LVGL_BACKGROUND, LV_OPA_COVER);
 #ifdef CONFIG_NICE_VIEW_DISP_ROTATE_180
-    lv_canvas_transform(canvas, &img, -900, LV_IMG_ZOOM_NONE, -1, 0, CANVAS_SIZE / 2,
-                        CANVAS_SIZE / 2 - 1, true);
+    lv_canvas_transform(canvas, &img, -900, zoom, -1, 0, CANVAS_SIZE / 2, CANVAS_SIZE / 2 - 1,
+                        true);
 #else
-    lv_canvas_transform(canvas, &img, 900, LV_IMG_ZOOM_NONE, -1, 0, CANVAS_SIZE / 2,
-                        CANVAS_SIZE / 2, true);
+    lv_canvas_transform(canvas, &img, 900, zoom, -1, 0, CANVAS_SIZE / 2, CANVAS_SIZE / 2, true);
 #endif
 }
 
