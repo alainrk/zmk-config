@@ -52,14 +52,6 @@ config NICE_VIEW_DISP_WIDGET_STATUS
 
 endif # !ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL
 
-if ZMK_SPLIT && !ZMK_SPLIT_ROLE_CENTRAL
-
-# Big font for the Bluetooth profile number on the peripheral display.
-config NICE_VIEW_DISP_WIDGET_STATUS
-    select LV_FONT_MONTSERRAT_48
-
-endif # ZMK_SPLIT && !ZMK_SPLIT_ROLE_CENTRAL
-
 config ZMK_DISPLAY_STATUS_SCREEN_BUILT_IN
     select LV_FONT_MONTSERRAT_26
 
