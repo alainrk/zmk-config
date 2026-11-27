@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT
+
+description: |
+  Tells the peripheral half which Bluetooth profile is active, so its display
+  can show it. The central half invokes it over the split link. It is not
+  meant to be bound to a key.
+
+compatible: "zmk,behavior-bt-profile-display"
+
+include: one_param.yaml

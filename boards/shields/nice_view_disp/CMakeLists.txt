@@ -10,8 +10,12 @@ if(CONFIG_ZMK_DISPLAY AND CONFIG_NICE_VIEW_DISP_WIDGET_STATUS)
 
   if(NOT CONFIG_ZMK_SPLIT OR CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
     zephyr_library_sources(widgets/status.c)
+    if(CONFIG_ZMK_SPLIT AND CONFIG_ZMK_BLE)
+      # Sends the active Bluetooth profile to the peripheral's display.
+      zephyr_library_sources(widgets/bt_profile_sync.c)
+    endif()
   else()
-    zephyr_library_sources(widgets/art.c)
     zephyr_library_sources(widgets/peripheral_status.c)
+    zephyr_library_sources(widgets/bt_profile_behavior.c)
   endif()
 endif()
