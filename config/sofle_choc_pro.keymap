@@ -15,6 +15,7 @@
 #define LOWER 1
 #define RAISE 2
 #define ADJUST 3
+#define BT_ALT 4
 
 / {
     // Activate ADJUST layer by pressing raise and lower
@@ -39,6 +40,41 @@
 
             tap-ms = <30>;
         };
+
+        // Bottom right thumb key: hold for the raise layer, double tap to
+        // switch between Bluetooth profile 0 and 1.
+        // ZMK has no "toggle between two profiles" action, so the BT_ALT
+        // layer remembers which profile is active: layer off means profile 0,
+        // layer on means profile 1. Each double tap selects the other profile
+        // and flips the layer.
+
+        td_raise_bt1: tap_dance_raise_bt1 {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&mo RAISE>, <&bt_to_1>;
+        };
+
+        td_raise_bt0: tap_dance_raise_bt0 {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&mo RAISE>, <&bt_to_0>;
+        };
+    };
+
+    macros {
+        bt_to_1: bt_to_1 {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL 1>, <&tog BT_ALT>;
+        };
+
+        bt_to_0: bt_to_0 {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL 0>, <&tog BT_ALT>;
+        };
     };
 
     keymap {
@@ -59,7 +95,7 @@
 &kp TAB           &kp Q   &kp W         &kp E   &kp R         &kp T         &kp Y                           &kp U              &kp I      &kp O          &kp P     &kp SINGLE_QUOTE
 &mt LCTRL ESCAPE  &kp A   &kp S         &kp D   &kp F         &kp G         &kp H                           &kp J              &kp K      &kp L          &kp SEMI  &kp BACKSPACE
 &kp LSHFT         &kp Z   &kp X         &kp C   &kp V         &kp B         &kp C_MUTE  &kp C_PLAY  &kp N   &kp M              &kp COMMA  &kp DOT        &kp FSLH  &kp RSHFT
-                          &kp CAPSLOCK  &mo 3   &kp LEFT_ALT  &kp LEFT_GUI  &kp RET     &kp SPACE   &mo 1   &kp RIGHT_CONTROL  &mo 2      &kp RIGHT_GUI
+                          &kp CAPSLOCK  &mo 3   &kp LEFT_ALT  &kp LEFT_GUI  &kp RET     &kp SPACE   &mo 1   &kp RIGHT_CONTROL  &mo 2      &td_raise_bt1
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP>, <&msc_enc>;
@@ -119,6 +155,20 @@
             sensor-bindings =
                 <&inc_dec_kp RG(MINUS) RG(EQUAL)>,
                 <&inc_dec_kp RG(MINUS) RG(EQUAL)>;
+        };
+
+        // On while Bluetooth profile 1 is selected. Only the bottom right
+        // thumb key differs, so the next double tap goes back to profile 0.
+
+        bt_alt {
+            display-name = "bt1";
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+                &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &td_raise_bt0
+            >;
         };
     };
 };
