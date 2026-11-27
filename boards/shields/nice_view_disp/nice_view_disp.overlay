@@ -20,16 +20,3 @@
         zephyr,display = &nice_view;
     };
 };
-
-/ {
-    behaviors {
-        // The left half uses this to tell the right half which Bluetooth
-        // profile is active. It is sent over the split link by name, so the
-        // node name must be 8 characters or less.
-        bt_prof_disp: btprof {
-            compatible = "zmk,behavior-bt-profile-display";
-            #binding-cells = <1>;
-            display-name = "BT Profile Display";
-        };
-    };
-};

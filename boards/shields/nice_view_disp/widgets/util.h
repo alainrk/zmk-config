@@ -40,9 +40,6 @@ struct battery_status_state {
 };
 
 void rotate_canvas(lv_obj_t *canvas, lv_color_t cbuf[]);
-// Same as rotate_canvas, but also scales the content around the canvas center.
-// zoom uses LVGL units: 256 is normal size, 512 is double.
-void rotate_canvas_zoom(lv_obj_t *canvas, lv_color_t cbuf[], uint16_t zoom);
 void draw_battery(lv_obj_t *canvas, const struct status_state *state);
 void init_label_dsc(lv_draw_label_dsc_t *label_dsc, lv_color_t color, const lv_font_t *font,
                     lv_text_align_t align);

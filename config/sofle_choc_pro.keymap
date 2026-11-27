@@ -41,7 +41,7 @@
             tap-ms = <30>;
         };
 
-        // Bottom right thumb key: hold for the raise layer, double tap to
+        // Bottom left key of the left half: hold for the raise layer, double tap to
         // switch between Bluetooth profile 0 and 1.
         // ZMK has no "toggle between two profiles" action, so the BT_ALT
         // layer remembers which profile is active: layer off means profile 0,
@@ -95,7 +95,7 @@
 &kp TAB           &kp Q   &kp W         &kp E   &kp R         &kp T         &kp Y                           &kp U              &kp I      &kp O          &kp P     &kp SINGLE_QUOTE
 &mt LCTRL ESCAPE  &kp A   &kp S         &kp D   &kp F         &kp G         &kp H                           &kp J              &kp K      &kp L          &kp SEMI  &kp BACKSPACE
 &kp LSHFT         &kp Z   &kp X         &kp C   &kp V         &kp B         &kp C_MUTE  &kp C_PLAY  &kp N   &kp M              &kp COMMA  &kp DOT        &kp FSLH  &kp RSHFT
-                          &kp CAPSLOCK  &mo 3   &kp LEFT_ALT  &kp LEFT_GUI  &kp RET     &kp SPACE   &mo 1   &kp RIGHT_CONTROL  &mo 2      &td_raise_bt1
+                          &td_raise_bt1  &mo 3  &kp LEFT_ALT  &kp LEFT_GUI  &kp RET     &kp SPACE   &mo 1   &kp RIGHT_CONTROL  &mo 2      &kp CAPSLOCK
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP>, <&msc_enc>;
@@ -157,8 +157,8 @@
                 <&inc_dec_kp RG(MINUS) RG(EQUAL)>;
         };
 
-        // On while Bluetooth profile 1 is selected. Only the bottom right
-        // thumb key differs, so the next double tap goes back to profile 0.
+        // On while Bluetooth profile 1 is selected. Only the bottom left key
+        // of the left half differs, so the next double tap goes back to profile 0.
 
         bt_alt {
             display-name = "bt1";
@@ -167,7 +167,7 @@
 &trans  &trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans
 &trans  &trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-                &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &td_raise_bt0
+                &td_raise_bt0  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
             >;
         };
     };
